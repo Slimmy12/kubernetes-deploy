@@ -9,3 +9,4 @@ spec:          #service will accept the request on port 3306 and route to the db
       protocol: TCP
   selector:
     app: vprodb    #this should be the label of your db pod
+  type: ClusterIP
