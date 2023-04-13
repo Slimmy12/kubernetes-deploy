@@ -1,0 +1,43 @@
+apiversion: app/v1
+kind: Deployment
+metadata:
+  name: vprodb
+  labels:
+    app: vprodb     #label is for the service def. file, service will route the request to any pod that has this label
+spec:
+  selector:
+    matchLabels:       #this section is not mandatory, just incase any pod is already running
+      app: vprodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vprodb    #pod will have this label
+    spec:
+      containers:
+        - name: vprodb
+          image: xxxxxxxxxxxxxx
+          args:
+            - "ignore-db-dir=lost+found"
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: vpro-db-data
+          ports:
+            - name: vprodb-port
+              containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vproapp-secret
+                  key: db-pass
+      nodeSelector:
+        zone: xxxxxxxxxxxxxxxxxx   #pod needs to run in the same zone as the EBS volume
+      volumes:
+        - name: vpro-db-data
+          awsElasticBlockStore:
+            volumeID: xxxxxxxxxxxxxxxxxx  #give the tag in the console, so your pod will be able to attach to the volume
+            fsType: ext4                  #tag key - kubernetesCluster, value - (cluster name)
+
+
+
