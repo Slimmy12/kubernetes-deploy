@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vprodb  #all service def. file will be based on the application.properties file
+spec:          #service will accept the request on port 3306 and route to the db pod(based on the app.properties file)
+  ports:
+    - ports: 3306
+      targetPort: vprodb-port  #you can also give port number
+      protocol: TCP
+  selector:
+    app: vprodb    #this should be the label of your db pod
